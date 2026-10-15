@@ -1,0 +1,70 @@
+
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+struct Edge {
+    int u, v, w;
+};
+
+int parent[100];
+
+int find(int x) {
+    if (parent[x] == x)
+        return x;
+    return parent[x] = find(parent[x]);
+}
+
+bool compare(Edge a, Edge b) {
+    return a.w < b.w;
+}
+
+int main() {
+    int V, E;
+    cout << "Enter vertices and edges: ";
+    cin >> V >> E;
+
+    Edge edges[100];
+
+    cout << "Enter edges (u v weight):\n";
+    for (int i = 0; i < E; i++) {
+        cin >> edges[i].u >> edges[i].v >> edges[i].w;
+    }
+
+    // Sort edges in ascending order
+    sort(edges, edges + E, compare);
+
+    // Initialize parent array
+    for (int i = 0; i < V; i++)
+        parent[i] = i;
+
+    int count = 0, totalCost = 0;
+
+    cout << "\nEdges in Minimum Spanning Tree:\n";
+
+    for (int i = 0; i < E && count < V - 1; i++) {
+        int u = edges[i].u;
+        int v = edges[i].v;
+        int w = edges[i].w;
+
+        int setU = find(u);
+        int setV = find(v);
+
+        // Select edge only if it does not form a cycle
+        if (setU != setV) {
+            cout << u << " - " << v << " : " << w << endl;
+
+            parent[setU] = setV;
+            totalCost += w;
+            count++;
+        }
+    }
+
+    if (count != V - 1) {
+        cout << "Graph is disconnected!\n";
+    } else {
+        cout << "Total minimum cost = " << totalCost << endl;
+    }
+
+    return 0;
+}
